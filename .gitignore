@@ -74,3 +74,4 @@ evaluation_results.json
 # Claude Code
 .claude/
 !.claude/settings.local.json
+claude.md
