@@ -39,10 +39,18 @@ env/
 *~
 .DS_Store
 
-# Project Specific
+# Project Specific - Uploaded Documents
 data/uploads/*
 !data/uploads/.gitkeep
-data/chromadb/
+
+# Vanna ChromaDB storage
+data/vanna_chromadb/
+
+# Allow SQL schema and scripts
+!data/sql/
+!data/*.py
+!data/**/*.sql
+
 *.log
 
 # Testing
