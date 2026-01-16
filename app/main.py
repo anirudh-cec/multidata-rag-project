@@ -55,9 +55,9 @@ rag_service: RAGService | None = None
 sql_service: TextToSQLService | None = None
 cache_service: CacheService | None = None
 
-# Upload directory
-UPLOAD_DIR = Path("data/uploads")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+# Upload directory (from config, supports both Lambda /tmp and local paths)
+UPLOAD_DIR = Path(settings.UPLOAD_DIR)
+CACHE_DIR = Path(settings.CACHE_DIR)
 
 
 @app.get("/health", status_code=status.HTTP_200_OK, tags=["Health"])
@@ -787,6 +787,11 @@ async def startup_event():
     """Execute tasks on application startup."""
     global embedding_service, vector_service, rag_service, sql_service, cache_service
 
+    # Ensure upload and cache directories exist
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Storage directories initialized: {UPLOAD_DIR}, {CACHE_DIR}")
+
     logger.info("=" * 60)
     logger.info("Starting Multi-Source RAG + Text-to-SQL API...")
     logger.info("=" * 60)
@@ -851,7 +856,6 @@ async def startup_event():
     # Initialize cache service (always available, no API key needed)
     try:
         logger.info("Initializing cache service...")
-        CACHE_DIR = Path(__file__).parent.parent / "data" / "cached_chunks"
         cache_service = CacheService(cache_dir=CACHE_DIR)
         logger.info("✓ Cache service initialized!")
     except Exception as e:

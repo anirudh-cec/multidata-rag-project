@@ -1,0 +1,25 @@
+FROM public.ecr.aws/lambda/python:3.12
+
+# Install system dependencies
+# Note: tesseract removed for Lambda - OCR can be added via Lambda layers
+# To add tesseract:
+#   1. Use pre-built layer (recommended): See LAMBDA_LAYERS.md
+#   2. Build custom layer: Run ./build-tesseract-layer.sh
+#   3. Add layer ARN to Lambda function configuration
+RUN dnf install -y \
+    poppler-utils \
+    gcc \
+    gcc-c++ \
+    && dnf clean all
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install mangum
+
+# Copy application code
+COPY app/ ${LAMBDA_TASK_ROOT}/app/
+COPY lambda_handler.py ${LAMBDA_TASK_ROOT}/
+
+# Set Lambda handler
+CMD ["lambda_handler.handler"]

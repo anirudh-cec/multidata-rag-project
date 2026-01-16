@@ -3,6 +3,7 @@ Configuration management using Pydantic Settings.
 Loads environment variables from .env file.
 """
 
+import os
 from pydantic_settings import BaseSettings
 from typing import Optional
 
@@ -38,6 +39,15 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 512
     MIN_CHUNK_SIZE: int = 256  # Minimum chunk size - smaller chunks will be merged
     CHUNK_OVERLAP: int = 50
+
+    # Storage paths (defaults to /tmp for Lambda, can be overridden for local dev)
+    UPLOAD_DIR: str = "/tmp/uploads"
+    CACHE_DIR: str = "/tmp/cached_chunks"
+
+    @property
+    def is_lambda(self) -> bool:
+        """Check if running in AWS Lambda environment."""
+        return os.getenv("AWS_LAMBDA_FUNCTION_NAME") is not None
 
     class Config:
         env_file = ".env"
