@@ -103,3 +103,5 @@ app/services/sql_service.py.backup_vanna0x
 
 DEPLOYMENT.md
 LAMBDA_LAYERS.md
+
+deploy_docs/*
